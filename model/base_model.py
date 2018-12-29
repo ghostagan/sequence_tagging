@@ -1,5 +1,6 @@
 import os
 import tensorflow as tf
+from model.data_utils import batches
 
 
 class BaseModel(object):
@@ -63,7 +64,7 @@ class BaseModel(object):
         self.logger.info("Initializing tf session")
         self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
-        self.saver = tf.train.Saver()
+        self.saver = tf.train.Saver(tf.global_variables(), max_to_keep=1)
 
 
     def restore_session(self, dir_model):
@@ -78,11 +79,11 @@ class BaseModel(object):
         self.saver.restore(self.sess, dir_model)
 
 
-    def save_session(self):
+    def save_session(self, step):
         """Saves session = weights"""
         if not os.path.exists(self.config.dir_model):
             os.makedirs(self.config.dir_model)
-        self.saver.save(self.sess, self.config.dir_model)
+        self.saver.save(self.sess, self.config.dir_model, global_step=step)
 
 
     def close_session(self):
@@ -114,26 +115,28 @@ class BaseModel(object):
         nepoch_no_imprv = 0 # for early stopping
         self.add_summary() # tensorboard
 
-        for epoch in range(self.config.nepochs):
-            self.logger.info("Epoch {:} out of {:}".format(epoch + 1,
-                        self.config.nepochs))
+        batch_size = self.config.batch_size
+        step = 0
+        best_score = 0
+        for i, (words, labels) in enumerate(batches(train, batch_size, self.config.nepochs)):
+            fd, _ = self.get_feed_dict(words, labels, self.config.lr, self.config.dropout)
 
-            score = self.run_epoch(train, dev, epoch)
-            self.config.lr *= self.config.lr_decay # decay learning rate
+            _, train_loss, summary = self.sess.run([self.train_op, self.loss, self.merged], feed_dict=fd)
 
-            # early stopping and saving best parameters
-            if score >= best_score:
-                nepoch_no_imprv = 0
-                self.save_session()
-                best_score = score
-                self.logger.info("- new best score!")
-            else:
-                nepoch_no_imprv += 1
-                if nepoch_no_imprv >= self.config.nepoch_no_imprv:
-                    self.logger.info("- early stopping {} epochs without "\
-                            "improvement".format(nepoch_no_imprv))
-                    break
+            if step % 1000 == 0:
+                self.config.lr *= self.config.lr_decay  # decay learning rate
 
+            if step % 100 == 0:
+                metrics = self.run_evaluate(dev)
+                msg = " - ".join(["{} {:04.2f}".format(k, v)
+                                  for k, v in metrics.items()])
+                self.logger.info('{}th step, Dev metrics {}'.format(step, msg))
+                if metrics["f1"] >= best_score:
+                    best_score = metrics['f1']
+                    self.logger.info("- new best score!")
+                    self.save_session(step)
+
+            step = step + 1
 
     def evaluate(self, test):
         """Evaluate model on test set

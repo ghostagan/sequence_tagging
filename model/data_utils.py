@@ -363,6 +363,23 @@ def minibatches(data, minibatch_size):
         yield x_batch, y_batch
 
 
+def batches(data, minibatch_size, num_epoch):
+    for i in range(num_epoch):
+        x_batch, y_batch = [], []
+        for (x, y) in data:
+            if len(x_batch) == minibatch_size:
+                yield x_batch, y_batch
+                x_batch, y_batch = [], []
+
+            if type(x[0]) == tuple:
+                x = zip(*x)
+            x_batch += [x]
+            y_batch += [y]
+
+        if len(x_batch) != 0:
+            yield x_batch, y_batch
+
+
 def get_chunk_type(tok, idx_to_tag):
     """
     Args:
