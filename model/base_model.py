@@ -123,10 +123,10 @@ class BaseModel(object):
 
             _, train_loss, summary = self.sess.run([self.train_op, self.loss, self.merged], feed_dict=fd)
 
-            if step % 1000 == 0:
+            if step % 10000 == 0:
                 self.config.lr *= self.config.lr_decay  # decay learning rate
 
-            if step % 100 == 0:
+            if step % 1000 == 0:
                 metrics = self.run_evaluate(dev)
                 msg = " - ".join(["{} {:04.2f}".format(k, v)
                                   for k, v in metrics.items()])
