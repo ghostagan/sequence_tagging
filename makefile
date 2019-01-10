@@ -4,6 +4,6 @@ glove:
 #	rm ./data/glove.6B.zip
 
 run:
-#	CUDA_VISIBLE_DEVICES=2 python build_data.py
+	CUDA_VISIBLE_DEVICES=2 python build_data.py
 	CUDA_VISIBLE_DEVICES=2 python train.py
 	CUDA_VISIBLE_DEVICES=2 python evaluate.py
