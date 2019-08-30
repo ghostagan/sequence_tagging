@@ -76,7 +76,10 @@ class BaseModel(object):
 
         """
         self.logger.info("Reloading the latest trained model...")
-        self.saver.restore(self.sess, dir_model)
+        # self.saver.restore(self.sess, dir_model)
+
+        checkpoint = tf.train.latest_checkpoint(dir_model)
+        self.saver.restore(self.sess, checkpoint)
 
 
     def save_session(self, step):

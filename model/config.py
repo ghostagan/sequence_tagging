@@ -56,7 +56,7 @@ class Config():
 
 
     # general config
-    dir_output = "results/test/"
+    dir_output = "results_conll/"
     dir_model  = dir_output + "model.weights/"
     path_log   = dir_output + "log.txt"
 
@@ -65,24 +65,24 @@ class Config():
     dim_char = 100
 
     # glove files
-    filename_glove = "chinese_data/sgns.wiki.word".format(dim_word)
+    filename_glove = "/data/machenglong/experiments/tf_ner_pycharm/data/example/glove.840B.300d.txt"
     # trimmed embeddings (created from glove_filename with build_data.py)
-    filename_trimmed = "chinese_data/sgns.wiki.{}d.trimmed.npz".format(dim_word)
+    filename_trimmed = dir_output + "glove.840B.300d.trimmed.npz"
     use_pretrained = True
 
     # dataset
-    filename_dev = "chinese_data/validation_chinese_validation.txt"
-    filename_test = "chinese_data/test_chinese_ner.txt"
-    filename_train = "chinese_data/train_chinese_ner.txt"
+    filename_dev = "/data/machenglong/experiments/sequence_tagging_pycharm/data/coll2003_valid_boi.txt"
+    filename_test = "/data/machenglong/experiments/sequence_tagging_pycharm/data/coll2003_test_boi.txt"
+    filename_train = "/data/machenglong/experiments/sequence_tagging_pycharm/data/coll2003_train_boi.txt"
 
     # filename_dev = filename_test = filename_train = "data/test.txt" # test
 
     max_iter = None # if not None, max number of examples in Dataset
 
     # vocab (created from dataset with build_data.py)
-    filename_words = "chinese_data/words.txt"
-    filename_tags = "chinese_data/tags.txt"
-    filename_chars = "chinese_data/chars.txt"
+    filename_words = dir_output + "words.txt"
+    filename_tags = dir_output +"tags.txt"
+    filename_chars = dir_output + "chars.txt"
 
     # training
     train_embeddings = False
@@ -101,4 +101,4 @@ class Config():
 
     # NOTE: if both chars and crf, only 1.6x slower on GPU
     use_crf = True # if crf, training is 1.7x slower on CPU
-    use_chars = True # if char embedding, training is 3.5x slower on CPU
+    use_chars = False # if char embedding, training is 3.5x slower on CPU

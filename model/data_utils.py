@@ -258,10 +258,10 @@ def get_processing_word(vocab_words=None, vocab_chars=None,
                     char_ids += [vocab_chars[char]]
 
         # 1. preprocess word
-        if lowercase:
-            word = word.lower()
-        if word.isdigit():
-            word = NUM
+        # if lowercase:
+        #     word = word.lower()
+        # if word.isdigit():
+        #     word = NUM
 
         # 2. get id of word
         if vocab_words is not None:
